@@ -1,0 +1,85 @@
+
+#Sometimes doesnt work, unlucky if all words match but aren't the intended message but probability for this lower for longer sentences
+#Doesn't decrypt names
+
+import re
+import string
+
+while True:
+
+    def load_dictionary():
+        english_words = []
+        with open("words.txt") as f:  
+            for line in f:
+                english_words.append(line.strip().lower())
+        return english_words
+
+    def testshifts(ciphertext, n):
+        decryptedstring = ""
+        for char in ciphertext:
+            if char.isalpha():
+                if char.isupper():
+                    base = ord('A')
+                else:
+                    base = ord('a')
+                deshifted = (ord(char) - base - n) % 26 + base
+                decryptedstring = decryptedstring + chr(deshifted)
+            else:
+                decryptedstring = decryptedstring + char
+        return decryptedstring
+
+
+    def dicttest(ciphertext, english_words):
+        for i in range(26):
+            a = testshifts(ciphertext, i)
+            attempt = a.lower()
+            
+            words_in_attempt = re.findall(r"\b[\w'-]+\b", attempt)
+            possiblelist = [w for w in words_in_attempt if w in english_words]
+
+            if len(possiblelist) == len(words_in_attempt):
+                return a
+
+    def encrypt(plaintext, shift):
+        encrypted_string = ""
+
+        if shift.isdigit() == True:
+            shift = int(shift)
+            for char in plaintext:
+                if char.isalpha():
+                    if char.isupper():
+                        base = ord('A')
+                    else:
+                        base = ord('a')
+                    shifted = (ord(char) - base + shift) % 26 + base
+                    encrypted_string = encrypted_string + chr(shifted)
+                else:
+                    encrypted_string = encrypted_string + char
+            return encrypted_string
+        
+        else:
+            print("Invalid key.")
+            quit()
+
+
+    question = input("Would you like to encrypt a message, decrypt a message, or quit? (e/d/q) ")
+
+    if question.lower().strip() == "e":
+        plaintext = input("What text would you like to encrypt? ")
+        shift = input("How much would you like to shift the ciphertext by? Enter an integer. ")
+        print(encrypt(plaintext, shift))
+
+    elif question.lower().strip() == "d":
+        words = load_dictionary()
+        ciphertext = input("What text would you like to decrypt? ")
+
+        if dicttest(ciphertext, words) == None:
+            print("Not valid English sentence.")
+        else:
+            print(dicttest(ciphertext, words))
+    
+    elif question.lower().strip() == "q":
+        break
+
+    else:
+        print("Not a valid command.")
