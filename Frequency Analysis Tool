@@ -1,0 +1,27 @@
+
+original_text = input("Enter cipher text: ")
+cipher_text = original_text.upper()
+
+letters = [chr(i) for i in range(ord("A"), ord("Z") + 1)]
+letter_frequencies = {letter: 0 for letter in letters}
+
+# Count only letters
+letter_count = 0
+for char in cipher_text:
+    if char in letter_frequencies:
+        letter_frequencies[char] += 1
+        letter_count += 1
+
+if letter_count == 0:
+    print("No letters found in text.")
+    exit()
+
+def calc_frequency(letter):
+    return letter_frequencies[letter] / letter_count
+
+# Sort cipher letters by frequency (most common first)
+sorted_letters = sorted(letters, key=lambda l: letter_frequencies[l], reverse=True)
+
+print("\nLetter Frequencies (sorted)")
+for letter in sorted_letters:
+    print(f"{letter}: {calc_frequency(letter):.3f}")
